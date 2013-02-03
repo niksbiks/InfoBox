@@ -1,0 +1,9 @@
+[Core]
+Name = Demo
+Module = Demo
+
+[Documentation]
+Author = Nikolaj Brandt Jensen
+Version = 1.0
+Website = 
+Description = A demo plugin to show various possibilities
