@@ -22,6 +22,21 @@ from yapsy.IPlugin import IPlugin
 
 
 class IInfoBoxPlugin(IPlugin):
-    def a(self):
-        print ''
+	def init(self):
+		print ''
         
+        def render(self):
+		print ''
+
+	def update(self):
+		print ''
+
+	def keyInput(self, key):
+		print''
+
+	def mouseInput(self, action):
+		print ''
+
+	def touchInput(self, action):
+		print ''
+

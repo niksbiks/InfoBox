@@ -16,7 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import os
+import os, sys, time
+import pygame
 
 from yapsy.PluginManager import PluginManager
 from yapsy.IPlugin import IPlugin
@@ -24,13 +25,22 @@ from yapsy.IPlugin import IPlugin
 from Utils import Utils
 from IInfoBoxPlugin import IInfoBoxPlugin
 
+
+
+# Globals
+screen_height = 400
+screen_width = 800
+screen_padding = 10
+screen_wide = screen_width > screen_height
+
+
 	
 
-def main():
+def loadPlugins():
 	# Find all plugin directories (xxx.plugin)
 	dirs = [f for f in os.listdir('.') if f.endswith('.plugin')]
-	for x in dirs:
-		print x
+#	for x in dirs:
+#		print x
         
 	# Load the plugins from the plugin directory.
 	manager = PluginManager()
@@ -38,14 +48,70 @@ def main():
 	manager.setCategoriesFilter({"plugin" : IInfoBoxPlugin})
 	manager.collectPlugins()
 
-	y = Utils()
+	return manager
+
+
+
+def initPlugins(manager, screen):
+	u = Utils()
 	
-	# Loop round the plugins and print their names.
+	# Loop round the plugins and init them
 	for plugin in manager.getPluginsOfCategory("plugin"):
-		plugin.plugin_object.print_name()
-		plugin.plugin_object.foo(y)
-
-
+		u.initLog(screen, plugin.name)
+#		plugin.plugin_object.print_name()
+#		plugin.plugin_object.foo(u)
 	
-main()
-print "Ready"
+	
+def loop(screen):
+        # Main loop
+	while True:
+		
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				exit_game()
+			if event.type == pygame.KEYDOWN:
+
+				redraw = True
+			if event.type == pygame.USEREVENT:
+				print "tick"
+				text = "test"
+				u = Utils()
+				u.initLog(screen, "tick")
+
+				height = screen_height / 10
+
+				font = pygame.font.SysFont('arial', height)
+				message = font.render(text, True, Utils.text_colour)
+				r = message.get_rect()
+				r.topright = (screen_width - screen_padding, 0)
+		
+				screen.blit(message, r)
+
+#		draw_screen()
+		pygame.display.flip()
+
+		time.sleep(0.1)
+
+
+
+def exit_game():
+	pygame.quit()
+	sys.exit()
+
+
+# Start Pygame	
+pygame.init()
+
+flags = 0 #pygame.FULLSCREEN + pygame.DOUBLEBUF + pygame.HWSURFACE
+screen = pygame.display.set_mode((screen_width, screen_height), flags)
+
+pygame.time.set_timer(pygame.USEREVENT, 1000)  # 1 second timer
+
+u = Utils()
+
+pluginManager = loadPlugins()
+u.initLog(screen, "Plugins loaded")
+
+initPlugins(pluginManager, screen)
+
+loop(screen)
