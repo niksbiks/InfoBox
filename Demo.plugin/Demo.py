@@ -16,18 +16,31 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import pygame
 from yapsy.IPlugin import IPlugin
 
 from IInfoBoxPlugin import IInfoBoxPlugin
+from Utils import Utils
 
 
 
-class Almanac(IInfoBoxPlugin):
-    def print_name(self):
-        print "This is plugin 1"
+class Demo(IInfoBoxPlugin):
+	active = 22
+	
+
+	def init(self, screen):
+		u = Utils()
+		u.initLog(screen, "Active is=" + str(Demo.active))
 
 
-    def foo(self, y):
-        print "foo() called"
-        #helper()
-        y.b()
+
+	def render(self, screen):		
+		# Background
+		screen.fill(Utils.background_colour)
+
+		height = 30
+		font = pygame.font.SysFont('arial', height)
+		message = font.render("Demo", True, Utils.text_colour)
+		r = message.get_rect()
+		r.topright = (100, 100)
+		screen.blit(message, r)

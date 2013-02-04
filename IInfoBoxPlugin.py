@@ -23,9 +23,9 @@ from yapsy.IPlugin import IPlugin
 
 class IInfoBoxPlugin(IPlugin):
 	def init(self):
-		print ''
+		print 'init() not implemented'
         
-        def render(self):
+        def render(self, screen):
 		print ''
 
 	def update(self):

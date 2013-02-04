@@ -50,6 +50,8 @@ class Utils:
 			screen.blit(message, r)
 			height += initLogFontSize
 
+		pygame.display.flip()
+
 
 
 	def b(self):

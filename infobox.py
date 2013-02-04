@@ -17,8 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os, sys, time
-import pygame
 
+import pygame
 from yapsy.PluginManager import PluginManager
 from yapsy.IPlugin import IPlugin
 
@@ -34,6 +34,10 @@ screen_padding = 10
 screen_wide = screen_width > screen_height
 
 
+
+class Context:
+	screen = 0
+	
 	
 
 def loadPlugins():
@@ -57,12 +61,26 @@ def initPlugins(manager, screen):
 	
 	# Loop round the plugins and init them
 	for plugin in manager.getPluginsOfCategory("plugin"):
-		u.initLog(screen, plugin.name)
-#		plugin.plugin_object.print_name()
-#		plugin.plugin_object.foo(u)
+		u.initLog(screen, "Init " + plugin.name + "...")
+		plugin.plugin_object.init(screen)
 	
 	
-def loop(screen):
+def loop(manager, screen):
+	active = 0				# The active plugin that is currently displayed
+	
+	# Build plugin control data structure
+	# Dictionary of all plugins:
+	#	key = Yapsy plugin name
+	# Each control is a list of:
+	#	object instance
+	#	when to call update
+	control = []
+	for plugin in manager.getPluginsOfCategory("plugin"):
+		c = []
+		c.append(plugin.plugin_object)
+		c.append(0)			# Run update immediately
+		active = plugin.plugin_object
+		
         # Main loop
 	while True:
 		
@@ -70,24 +88,12 @@ def loop(screen):
 			if event.type == pygame.QUIT:
 				exit_game()
 			if event.type == pygame.KEYDOWN:
-
 				redraw = True
 			if event.type == pygame.USEREVENT:
 				print "tick"
-				text = "test"
-				u = Utils()
-				u.initLog(screen, "tick")
 
-				height = screen_height / 10
-
-				font = pygame.font.SysFont('arial', height)
-				message = font.render(text, True, Utils.text_colour)
-				r = message.get_rect()
-				r.topright = (screen_width - screen_padding, 0)
-		
-				screen.blit(message, r)
-
-#		draw_screen()
+		# Render active plugin
+		active.render(screen)
 		pygame.display.flip()
 
 		time.sleep(0.1)
@@ -109,9 +115,18 @@ pygame.time.set_timer(pygame.USEREVENT, 1000)  # 1 second timer
 
 u = Utils()
 
+# Load all plugins
 pluginManager = loadPlugins()
 u.initLog(screen, "Plugins loaded")
 
+# Load configuration
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# Init all plugins
 initPlugins(pluginManager, screen)
 
-loop(screen)
+u.initLog(screen, "READY")
+time.sleep(3)
+
+# Run "game" loop forever...
+loop(pluginManager, screen)
