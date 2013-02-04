@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import os, sys, time
+import os, sys, time, pprint
 
 import pygame
 from yapsy.PluginManager import PluginManager
@@ -72,13 +72,19 @@ def loop(manager, screen):
 	# Dictionary of all plugins:
 	#	key = Yapsy plugin name
 	# Each control is a list of:
+	#	plugin name
 	#	object instance
 	#	when to call update
-	control = []
+	control = {}
+	
 	for plugin in manager.getPluginsOfCategory("plugin"):
 		c = []
+		c.append(plugin.name)
 		c.append(plugin.plugin_object)
-		c.append(0)			# Run update immediately
+		nextUpdate = plugin.plugin_object.update() + time.time()	# Run update immediately
+		c.append(nextUpdate)			
+		control[plugin.name] = c
+
 		active = plugin.plugin_object
 		
         # Main loop
@@ -88,9 +94,17 @@ def loop(manager, screen):
 			if event.type == pygame.QUIT:
 				exit_game()
 			if event.type == pygame.KEYDOWN:
-				redraw = True
+				print "Now: " + str(time.time())
+				pprint.pprint(control)
+				print "Active: "
+				pprint.pprint(active)
 			if event.type == pygame.USEREVENT:
 				print "tick"
+
+		# Check for necessary updates
+		for key in control:
+			if control[key][2] < time.time():			# Is requested update time reached?
+				control[key][2] = control[key][1].update() + time.time()	# Call update and store new requested update time
 
 		# Render active plugin
 		active.render(screen)

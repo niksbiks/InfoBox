@@ -29,6 +29,7 @@ class Utils:
 
 	initLogMessages = []
 
+        # Only call this from the init() function!
 	def initLog(self, screen, message):
 		initLogFontSize = 12
 		initLogLineCount = screen.get_height() / 12
@@ -53,6 +54,3 @@ class Utils:
 		pygame.display.flip()
 
 
-
-	def b(self):
-		print "Utils is helping"

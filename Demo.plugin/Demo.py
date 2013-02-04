@@ -44,3 +44,7 @@ class Demo(IInfoBoxPlugin):
 		r = message.get_rect()
 		r.topright = (100, 100)
 		screen.blit(message, r)
+
+	def update(self):
+		Demo.active = (Demo.active + 7) % 100
+		return 3

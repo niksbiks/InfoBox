@@ -16,6 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import time
+
 import pygame
 from yapsy.IPlugin import IPlugin
 
@@ -25,7 +27,8 @@ from Utils import Utils
 
 
 class Weather(IInfoBoxPlugin):
-
+        timestamp = "New"
+        
 	def init(self, screen):
 		u = Utils()
 		u.initLog(screen, "Getting weather")
@@ -38,7 +41,12 @@ class Weather(IInfoBoxPlugin):
 
 		height = 30
 		font = pygame.font.SysFont('arial', height)
-		message = font.render("Weather", True, Utils.text_colour)
+		message = font.render("Weather for " + Weather.timestamp, True, Utils.text_colour)
 		r = message.get_rect()
 		r.topleft = (100, 100)
 		screen.blit(message, r)
+
+	def update(self):
+                print "ping"
+                Weather.timestamp = time.strftime("%a %d. %b %H:%M:%S")
+		return 5
