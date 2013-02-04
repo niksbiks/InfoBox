@@ -1,0 +1,9 @@
+[Core]
+Name = Weather
+Module = Weather
+
+[Documentation]
+Author = Nikolaj Brandt Jensen
+Version = 1.0
+Website = 
+Description = Show weather forcast for a single location using openweathermap.org
