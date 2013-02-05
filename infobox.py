@@ -27,24 +27,24 @@ from IInfoBoxPlugin import IInfoBoxPlugin
 
 
 
-# Globals
-screen_height = 400
-screen_width = 800
-screen_padding = 10
-screen_wide = screen_width > screen_height
-
-
-
 class Context:
-	screen = 0
+	screen = None
+	u = None
+	screen_height = 400
+	screen_width = 800
+	screen_padding = 10
 	
+	def isScreenWide():
+		if screen_width > screen_height:
+			return True
+		else:
+			return False
+		
 	
 
 def loadPlugins():
 	# Find all plugin directories (xxx.plugin)
 	dirs = [f for f in os.listdir('.') if f.endswith('.plugin')]
-#	for x in dirs:
-#		print x
         
 	# Load the plugins from the plugin directory.
 	manager = PluginManager()
@@ -56,16 +56,14 @@ def loadPlugins():
 
 
 
-def initPlugins(manager, screen):
-	u = Utils()
-	
+def initPlugins(manager, context):
 	# Loop round the plugins and init them
 	for plugin in manager.getPluginsOfCategory("plugin"):
-		u.initLog(screen, "Init " + plugin.name + "...")
-		plugin.plugin_object.init(screen)
+		context.u.initLog("Init " + plugin.name + "...")
+		plugin.plugin_object.init(context)
 	
 	
-def loop(manager, screen):
+def loop(manager, context):
 	active = 0				# The active plugin that is currently displayed
 	
 	# Build plugin control data structure
@@ -81,7 +79,7 @@ def loop(manager, screen):
 		c = []
 		c.append(plugin.name)
 		c.append(plugin.plugin_object)
-		nextUpdate = plugin.plugin_object.update() + time.time()	# Run update immediately
+		nextUpdate = plugin.plugin_object.update(context) + time.time()	# Run update immediately
 		c.append(nextUpdate)			
 		control[plugin.name] = c
 
@@ -104,10 +102,10 @@ def loop(manager, screen):
 		# Check for necessary updates
 		for key in control:
 			if control[key][2] < time.time():			# Is requested update time reached?
-				control[key][2] = control[key][1].update() + time.time()	# Call update and store new requested update time
+				control[key][2] = control[key][1].update(context) + time.time()	# Call update and store new requested update time
 
 		# Render active plugin
-		active.render(screen)
+		active.render(context)
 		pygame.display.flip()
 
 		time.sleep(0.1)
@@ -122,25 +120,29 @@ def exit_game():
 # Start Pygame	
 pygame.init()
 
+c = Context()
+c.u = Utils()
+c.u.context = c
+
 flags = 0 #pygame.FULLSCREEN + pygame.DOUBLEBUF + pygame.HWSURFACE
-screen = pygame.display.set_mode((screen_width, screen_height), flags)
+screen = pygame.display.set_mode((c.screen_width, c.screen_height), flags)
 
 pygame.time.set_timer(pygame.USEREVENT, 1000)  # 1 second timer
 
-u = Utils()
+c.screen = screen
 
 # Load all plugins
 pluginManager = loadPlugins()
-u.initLog(screen, "Plugins loaded")
+c.u.initLog("Plugins loaded")
 
 # Load configuration
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # Init all plugins
-initPlugins(pluginManager, screen)
+initPlugins(pluginManager, c)
 
-u.initLog(screen, "READY")
+c.u.initLog("READY")
 time.sleep(3)
 
 # Run "game" loop forever...
-loop(pluginManager, screen)
+loop(pluginManager, c)

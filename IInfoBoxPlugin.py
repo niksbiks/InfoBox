@@ -24,17 +24,17 @@ from yapsy.IPlugin import IPlugin
 class IInfoBoxPlugin(IPlugin):
         # Do whatever initialisation is necessary
         # Do not call update() from the init() function
-	def init(self):
+	def init(self, context):
 		print 'init() not implemented'
 
         # Render a frame to the display
-        def render(self, screen):
+        def render(self, context):
 		print ''
 
         # Update the data needed for rendering frames
         # Must return the number of seconds until next requested update
         # Note that updates are "best effort", and not guaranteed to run at the exact specified delay
-	def update(self):
+	def update(self, context):
 		return 60*60
 
 	def keyInput(self, key):

@@ -28,13 +28,12 @@ class Demo(IInfoBoxPlugin):
 	active = 22
 	
 
-	def init(self, screen):
-		u = Utils()
-		u.initLog(screen, "Active is=" + str(Demo.active))
+	def init(self, context):
+		context.u.initLog("Active is=" + str(Demo.active))
 
 
 
-	def render(self, screen):		
+	def render(self, context):		
 		# Background
 		screen.fill(Utils.background_colour)
 
@@ -43,8 +42,8 @@ class Demo(IInfoBoxPlugin):
 		message = font.render("Demo", True, Utils.text_colour)
 		r = message.get_rect()
 		r.topright = (100, 100)
-		screen.blit(message, r)
+		context.screen.blit(message, r)
 
-	def update(self):
+	def update(self, context):
 		Demo.active = (Demo.active + 7) % 100
 		return 3

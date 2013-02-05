@@ -29,24 +29,23 @@ from Utils import Utils
 class Weather(IInfoBoxPlugin):
         timestamp = "New"
         
-	def init(self, screen):
-		u = Utils()
-		u.initLog(screen, "Getting weather")
+	def init(self, context):
+		context.u.initLog("Getting weather")
 
 		
 
-	def render(self, screen):		
+	def render(self, context):		
 		# Background
-		screen.fill(Utils.background_colour)
+		context.screen.fill(Utils.background_colour)
 
 		height = 30
 		font = pygame.font.SysFont('arial', height)
 		message = font.render("Weather for " + Weather.timestamp, True, Utils.text_colour)
 		r = message.get_rect()
 		r.topleft = (100, 100)
-		screen.blit(message, r)
+		context.screen.blit(message, r)
 
-	def update(self):
+	def update(self, context):
                 print "ping"
                 Weather.timestamp = time.strftime("%a %d. %b %H:%M:%S")
 		return 5

@@ -22,24 +22,26 @@ import pygame
 
 
 class Utils:
+	context = None
 	text_colour = (255, 255, 255)
 	text_colour_warning = (250, 25, 25)
 	line_colour = (128, 128, 128)
 	background_colour = (0, 0, 0)
-
+	fontName = "arial"
+        
 	initLogMessages = []
 
         # Only call this from the init() function!
-	def initLog(self, screen, message):
+	def initLog(self, message):
 		initLogFontSize = 12
-		initLogLineCount = screen.get_height() / 12
+		initLogLineCount = self.context.screen_height / 12
 	
 		Utils.initLogMessages.append(message)
 		if len(Utils.initLogMessages) > initLogLineCount:
 			Utils.initLogMessages.pop(0)
 			
 		# Background
-		screen.fill(Utils.background_colour)
+		self.context.screen.fill(Utils.background_colour)
 
 		# Draw text lines
 		font = pygame.font.SysFont('arial', initLogFontSize)
@@ -48,9 +50,25 @@ class Utils:
 			message = font.render(text, True, Utils.text_colour)
 			r = message.get_rect()
 			r.topleft = (0, height)
-			screen.blit(message, r)
+			self.context.screen.blit(message, r)
 			height += initLogFontSize
 
 		pygame.display.flip()
 
 
+
+	# Draw a horizontal line at height 'y'
+	def draw_h_divider(self, y):
+		pygame.draw.line(self.context.screen, Utils.line_colour, (0, y), (screen_width, y))
+
+
+
+	# Draw a line in the middle of the screen from y to bottom of screen
+	def draw_v_divider(self, y):
+		pygame.draw.line(self.context.screen, Utils.line_colour, (screen_width / 2, y), (screen_width / 2 , screen_height))
+
+
+
+	# Draw top status bar without doing flip()
+	def drawTopStatusBar(self):
+		draw_h_divider(40)
