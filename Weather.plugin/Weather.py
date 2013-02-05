@@ -38,6 +38,8 @@ class Weather(IInfoBoxPlugin):
 		# Background
 		context.screen.fill(Utils.background_colour)
 
+		context.u.drawTopStatusBar("Weather")
+		
 		height = 30
 		font = pygame.font.SysFont('arial', height)
 		message = font.render("Weather for " + Weather.timestamp, True, Utils.text_colour)

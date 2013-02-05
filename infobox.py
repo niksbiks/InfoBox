@@ -32,7 +32,6 @@ class Context:
 	u = None
 	screen_height = 400
 	screen_width = 800
-	screen_padding = 10
 	
 	def isScreenWide():
 		if screen_width > screen_height:

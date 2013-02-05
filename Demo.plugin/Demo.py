@@ -37,12 +37,18 @@ class Demo(IInfoBoxPlugin):
 		# Background
 		screen.fill(Utils.background_colour)
 
+		# Draw top bar
+		context.u.drawTopStatusBar("Demo")
+		
+
 		height = 30
-		font = pygame.font.SysFont('arial', height)
+		font = pygame.font.SysFont(Utils.fontName, height)
 		message = font.render("Demo", True, Utils.text_colour)
 		r = message.get_rect()
 		r.topright = (100, 100)
 		context.screen.blit(message, r)
+
+
 
 	def update(self, context):
 		Demo.active = (Demo.active + 7) % 100

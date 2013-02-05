@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import os
+import os, time
 import pygame
 
 
@@ -28,6 +28,7 @@ class Utils:
 	line_colour = (128, 128, 128)
 	background_colour = (0, 0, 0)
 	fontName = "arial"
+	screen_padding = 10
         
 	initLogMessages = []
 
@@ -44,7 +45,7 @@ class Utils:
 		self.context.screen.fill(Utils.background_colour)
 
 		# Draw text lines
-		font = pygame.font.SysFont('arial', initLogFontSize)
+		font = pygame.font.SysFont(Utils.fontName, initLogFontSize)
 		height = 0
 		for text in Utils.initLogMessages:
 			message = font.render(text, True, Utils.text_colour)
@@ -58,17 +59,40 @@ class Utils:
 
 
 	# Draw a horizontal line at height 'y'
-	def draw_h_divider(self, y):
-		pygame.draw.line(self.context.screen, Utils.line_colour, (0, y), (screen_width, y))
+	def drawHDivider(self, y):
+		pygame.draw.line(self.context.screen, Utils.line_colour, (0, y), (self.context.screen_width, y))
 
 
 
 	# Draw a line in the middle of the screen from y to bottom of screen
-	def draw_v_divider(self, y):
-		pygame.draw.line(self.context.screen, Utils.line_colour, (screen_width / 2, y), (screen_width / 2 , screen_height))
+	def drawVDivider(self, y):
+		pygame.draw.line(self.context.screen, Utils.line_colour, (self.context.screen_width / 2, y), (self.context.screen_width / 2 , self.context.screen_height))
+
+
+
+	def drawTimestamp(self):
+		text = time.strftime("%a %d. %b %H:%M")
+
+		height = self.context.screen_height / 10
+
+		font = pygame.font.SysFont(Utils.fontName, height)
+		message = font.render(text, True, Utils.text_colour)
+		r = message.get_rect()
+		r.topright = (self.context.screen_width - Utils.screen_padding, 0)
+		
+		self.context.screen.blit(message, r)
 
 
 
 	# Draw top status bar without doing flip()
-	def drawTopStatusBar(self):
-		draw_h_divider(40)
+	def drawTopStatusBar(self, name):
+		self.drawHDivider(self.context.screen_height / 10)
+
+		font = pygame.font.SysFont(Utils.fontName, self.context.screen_height / 10)
+		message = font.render(name, True, Utils.text_colour)
+		r = message.get_rect()
+		r.topleft = (0, 0)
+		self.context.screen.blit(message, r)
+
+		self.drawTimestamp()
+		
