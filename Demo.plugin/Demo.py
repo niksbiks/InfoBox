@@ -35,7 +35,7 @@ class Demo(IInfoBoxPlugin):
 
 	def render(self, context):		
 		# Background
-		screen.fill(Utils.background_colour)
+		context.screen.fill(Utils.background_colour)
 
 		# Draw top bar
 		context.u.drawTopStatusBar("Demo")

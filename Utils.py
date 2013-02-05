@@ -58,6 +58,11 @@ class Utils:
 
 
 
+	def debug(self, message):
+		print message
+
+
+
 	# Draw a horizontal line at height 'y'
 	def drawHDivider(self, y):
 		pygame.draw.line(self.context.screen, Utils.line_colour, (0, y), (self.context.screen_width, y))

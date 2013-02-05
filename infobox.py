@@ -63,7 +63,8 @@ def initPlugins(manager, context):
 	
 	
 def loop(manager, context):
-	active = 0				# The active plugin that is currently displayed
+	active = None	# The active plugin that is currently displayed
+	nextActiveChange = 0
 	
 	# Build plugin control data structure
 	# Dictionary of all plugins:
@@ -76,17 +77,22 @@ def loop(manager, context):
 	
 	for plugin in manager.getPluginsOfCategory("plugin"):
 		c = []
-		c.append(plugin.name)
-		c.append(plugin.plugin_object)
+		c.append(plugin.name) # 1: Name
+		c.append(plugin.plugin_object) # 2: Instance
 		nextUpdate = plugin.plugin_object.update(context) + time.time()	# Run update immediately
-		c.append(nextUpdate)			
+		c.append(nextUpdate) # 3: Update time
 		control[plugin.name] = c
-
-		active = plugin.plugin_object
 		
         # Main loop
 	while True:
 		
+		# Switch display?
+		if time.time() > nextActiveChange:
+			active = nextActive(control, active)
+			nextActiveChange = time.time() + 15 # !!!!!!!!!!!!!! .displayTime in %
+			context.u.debug("New display: " + str(active))
+
+		# Look for events
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				exit_game()
@@ -111,6 +117,21 @@ def loop(manager, context):
 
 
 
+# Find next display, round-robin style, based on plugin load order
+def nextActive(control, active):
+	newActive = control[control.keys()[0]][1]	# Default to first one loaded
+
+	nextIsNewActive = False
+	for key in control.keys():	# Find next after active, if any
+		if nextIsNewActive:
+			newActive = control[key][1]
+			nextIsNewActive = False
+		if control[key][1] == active:
+			nextIsNewActive = True
+	return newActive
+
+
+	
 def exit_game():
 	pygame.quit()
 	sys.exit()
