@@ -1,0 +1,9 @@
+[Core]
+Name = Stog
+Module = Stog
+
+[Documentation]
+Author = Nikolaj Brandt Jensen
+Version = 1.0
+Website = 
+Description = Show time to departure for S-tog using data from DSB Labs

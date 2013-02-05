@@ -35,20 +35,20 @@ class Context:
 	screen_height = 400
 	screen_width = 800
 	
-	def isScreenWide():
-		if screen_width > screen_height:
+	def isScreenWide(self):
+		if self.screen_width > self.screen_height:
 			return True
 		else:
 			return False
 		
 	
 
-def loadConfig(context):
+def loadConfig():
 	parser = SafeConfigParser()
 	f = codecs.open('configuration.ini', 'r', encoding='utf-8')
 	parser.readfp(f)
 
-	context.config = parser
+	return parser
 
 
 
@@ -108,12 +108,15 @@ def loop(manager, context):
 			if event.type == pygame.QUIT:
 				exit_game()
 			if event.type == pygame.KEYDOWN:
+				# Exit (Esc)
+				# Next display (arrow right)
+				# Debug (Space)
 				print "Now: " + str(time.time())
 				pprint.pprint(control)
 				print "Active: "
 				pprint.pprint(active)
 			if event.type == pygame.USEREVENT:
-				print "tick"
+				context.u.debug("tick")
 
 		# Check for necessary updates
 		for key in control:
@@ -148,17 +151,17 @@ def exit_game():
 	sys.exit()
 
 
+
 # Start Pygame	
 pygame.init()
 
+#Setup global context (ugly style)
 c = Context()
 c.u = Utils()
 c.u.context = c
 
 flags = 0 #pygame.FULLSCREEN + pygame.DOUBLEBUF + pygame.HWSURFACE
 screen = pygame.display.set_mode((c.screen_width, c.screen_height), flags)
-
-pygame.time.set_timer(pygame.USEREVENT, 1000)  # 1 second timer
 
 c.screen = screen
 
@@ -168,7 +171,7 @@ c.u.initLog("Plugins loaded")
 
 # Load configuration
 c.u.initLog("Configuration:")
-loadConfig(c)
+c.config = loadConfig()
 for section_name in c.config.sections():
 	c.u.initLog(section_name)
 	for name, value in c.config.items(section_name):
@@ -179,6 +182,9 @@ initPlugins(pluginManager, c)
 
 c.u.initLog("READY")
 time.sleep(4)
+
+# Start 1 second timer
+pygame.time.set_timer(pygame.USEREVENT, 1000)
 
 # Run "game" loop forever...
 loop(pluginManager, c)
