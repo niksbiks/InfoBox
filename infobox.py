@@ -17,7 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os, sys, time, pprint
-
+from ConfigParser import SafeConfigParser
+import codecs
 import pygame
 from yapsy.PluginManager import PluginManager
 from yapsy.IPlugin import IPlugin
@@ -30,6 +31,7 @@ from IInfoBoxPlugin import IInfoBoxPlugin
 class Context:
 	screen = None
 	u = None
+	config = None
 	screen_height = 400
 	screen_width = 800
 	
@@ -40,6 +42,15 @@ class Context:
 			return False
 		
 	
+
+def loadConfig(context):
+	parser = SafeConfigParser()
+	f = codecs.open('configuration.ini', 'r', encoding='utf-8')
+	parser.readfp(f)
+
+	context.config = parser
+
+
 
 def loadPlugins():
 	# Find all plugin directories (xxx.plugin)
@@ -156,13 +167,18 @@ pluginManager = loadPlugins()
 c.u.initLog("Plugins loaded")
 
 # Load configuration
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+c.u.initLog("Configuration:")
+loadConfig(c)
+for section_name in c.config.sections():
+	c.u.initLog(section_name)
+	for name, value in c.config.items(section_name):
+		c.u.initLog("   " + name + ": " + value)
 
 # Init all plugins
 initPlugins(pluginManager, c)
 
 c.u.initLog("READY")
-time.sleep(3)
+time.sleep(4)
 
 # Run "game" loop forever...
 loop(pluginManager, c)
