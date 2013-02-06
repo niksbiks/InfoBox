@@ -20,6 +20,7 @@ import os, sys, time, pprint
 from ConfigParser import SafeConfigParser
 import codecs
 import pygame
+from pygame.locals import *
 from yapsy.PluginManager import PluginManager
 from yapsy.IPlugin import IPlugin
 
@@ -90,17 +91,21 @@ def loop(manager, context):
 		c = []
 		c.append(plugin.name) # 1: Name
 		c.append(plugin.plugin_object) # 2: Instance
-		nextUpdate = plugin.plugin_object.update(context) + time.time()	# Run update immediately
-		c.append(nextUpdate) # 3: Update time
+		c.append(0) # 3: Update time (initially, run update immediately)
 		control[plugin.name] = c
 		
         # Main loop
 	while True:
+		# Check for necessary updates
+		for key in control:
+			if control[key][2] < time.time():			# Is requested update time reached?
+				context.u.debug("Updating: " + key)
+				control[key][2] = control[key][1].update(context) + time.time()	# Call update and store new requested update time
 		
 		# Switch display?
 		if time.time() > nextActiveChange:
 			active = nextActive(control, active)
-			nextActiveChange = time.time() + 15 # !!!!!!!!!!!!!! .displayTime in %
+			nextActiveChange = time.time() + 15 # TODO !!!!!!!!!!!!!! .displayTime in %
 			context.u.debug("New display: " + str(active))
 
 		# Look for events
@@ -109,19 +114,23 @@ def loop(manager, context):
 				exit_game()
 			if event.type == pygame.KEYDOWN:
 				# Exit (Esc)
+				if event.key == K_ESCAPE:
+					exit_game()
 				# Next display (arrow right)
-				# Debug (Space)
-				print "Now: " + str(time.time())
-				pprint.pprint(control)
-				print "Active: "
-				pprint.pprint(active)
+				elif event.key == K_RIGHT:
+					nextActiveChange = 0
+				# Debug (Enter)
+				elif event.key == K_RETURN:
+					print "Now: " + str(time.time())
+					pprint.pprint(control)
+					print "Active: "
+					pprint.pprint(active)
+				# Pause (Space)
+				elif event.key == K_SPACE:
+					paused = True
+					# TODO !!!!!!!!!!!!!!!!!!!!!
 			if event.type == pygame.USEREVENT:
 				context.u.debug("tick")
-
-		# Check for necessary updates
-		for key in control:
-			if control[key][2] < time.time():			# Is requested update time reached?
-				control[key][2] = control[key][1].update(context) + time.time()	# Call update and store new requested update time
 
 		# Render active plugin
 		active.render(context)

@@ -100,4 +100,16 @@ class Utils:
 		self.context.screen.blit(message, r)
 
 		self.drawTimestamp()
-		
+
+
+
+	# Load an image
+	def loadImage(self, name, colorkey = None):
+		fullname = os.path.join('.', name)
+		image = pygame.image.load(fullname)
+		image = image.convert()
+
+		if colorkey is not None:
+			image.set_colorkey(colorkey, RLEACCEL)
+			
+		return image
